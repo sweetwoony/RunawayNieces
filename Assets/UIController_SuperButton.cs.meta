@@ -1,0 +1,40 @@
+fileFormatVersion: 2
+guid: ff3ec592cee01a24eabc473ff7061bd1
+timeCreated: 1524311732
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - Buta_SuperButton01: {fileID: 21300000, guid: 630fce069f2cb0848991fde10a1c93b1,
+      type: 3}
+  - Buta_SuperButton02: {fileID: 21300000, guid: 21abec6485b349743beb1ea9b9093882,
+      type: 3}
+  - Buta_SuperButton03: {fileID: 21300000, guid: abc1dbae8115f134eae3916300cc6e00,
+      type: 3}
+  - Buta_SuperButton04: {fileID: 21300000, guid: 4d48d375e1620144cb5ad916a96fd866,
+      type: 3}
+  - Buta_SuperButton05: {fileID: 21300000, guid: fdfe7359b09381145a758cb1cd7d19b5,
+      type: 3}
+  - Buta_SuperButton06: {fileID: 21300000, guid: be83606932d227b4a88250e990f18b57,
+      type: 3}
+  - Buta_SuperButton07: {fileID: 21300000, guid: 0009a767cab463d4da0d273937eeb2ff,
+      type: 3}
+  - Buta_SuperButton08: {fileID: 21300000, guid: 9bc5655ebe9d0fa49a85d4bedb71f0a7,
+      type: 3}
+  - Buta_SuperButton09: {fileID: 21300000, guid: 06a673fec9c9cf34aa2520568c5073b9,
+      type: 3}
+  - Buta_SuperButton10: {fileID: 21300000, guid: 8b6d41e42e8fcba4198f6ea6bbab3433,
+      type: 3}
+  - Buta_SuperButton11: {fileID: 21300000, guid: 011283a95c933214e8d4f23969d8151e,
+      type: 3}
+  - Buta_SuperButton12: {fileID: 21300000, guid: 16c81b21c13532041840adec4a2a4f00,
+      type: 3}
+  - Buta_SuperButton13: {fileID: 21300000, guid: 88a0b22ab978cc243ada702fc77e6bfb,
+      type: 3}
+  - SuperCharge01: {fileID: 21300000, guid: b5a99bc61aee4db47a2ec518a295765d, type: 3}
+  - SuperCharge02: {fileID: 21300000, guid: 24ac9cda681d4b44c82978ffb691bc57, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
