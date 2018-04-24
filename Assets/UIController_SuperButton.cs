@@ -42,7 +42,7 @@ public class UIController_SuperButton : MonoBehaviour {
 	void Update () {
 
 		//ダメージ後の顔面位置をリセット
-		this.transform.position = new Vector2 (Screen.width / 2, Screen.height / 7);
+		this.transform.position = new Vector2 (Screen.width / 2, Screen.height / 10);
 		//衝撃耐性の溜まり方に応じた豚の表情の変化
 		float ButaConditionFace = myPlayer.GetComponent<PlayerController>().ImpactResistPt;
 		//オブジェクト「Player」衝突時の顔面シェイク時間を取得
