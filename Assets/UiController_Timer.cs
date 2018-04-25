@@ -40,6 +40,6 @@ public class UiController_Timer : MonoBehaviour {
 			secText = second.ToString ();
 		}
 
-		text.text = minText + ":" + secText;
+		text.text = "TIME : " + minText + ":" + secText;
 	}
 }

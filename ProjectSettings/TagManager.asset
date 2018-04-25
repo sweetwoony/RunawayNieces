@@ -7,10 +7,13 @@ TagManager:
   - LeftTurnButtonTag
   - RightTurnButtonTag
   - GameOverTag_DeadZone
-  - DamageTag_Obstacle
   - GroundTag
   - SuperButtonTag
   - PlayerTag
+  - DamageTag_Wall
+  - DamageTag_Piller
+  - GetItemTag_ScoreItem
+  - GetItemTag_KeyItem
   layers:
   - Default
   - TransparentFX

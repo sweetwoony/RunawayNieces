@@ -24,7 +24,7 @@ GameObject:
   - component: {fileID: 23354477993876460}
   m_Layer: 0
   m_Name: TestWall
-  m_TagString: DamageTag_Obstacle
+  m_TagString: DamageTag_Wall
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

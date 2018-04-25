@@ -8,18 +8,22 @@ public class PlayerController : MonoBehaviour {
 	// １）前進に関する調整
 	// ２．１）ターン関連；旋回入力ＯＮ・ＯＦＦ、各旋回量、
 	// ２．２）ターン関連；スライドターンpt蓄積値関連
-	// ４）ゲームオーバー処理
-	// ５）壁・敵と衝突時の加算される衝撃値や反動調整
-	// ７）スーパーボタン（仮）の処理。蓄積条件は主に速度。
+	// ３）スコア関連
+	// ４）キーアイテム関連
+	// ５）スーパーボタン（仮）の処理。蓄積条件は主に速度。
+	// ６）ゲームオーバー処理
+	// ７）壁・敵と衝突時の加算される衝撃値や反動調整
 
 
-	// ６）８）で使用プレイヤーを移動させるコンポーネントを入れる
+	// プレイヤーを移動させるコンポーネントを入れる
 	private Rigidbody myRigidbody;
 
 	// １）で使用　前進ＯＮ・ＯＦＦスイッチ
 	private bool WalkForwardSwitch = false;
 	// １）で使用　前進するための力
 	private float forwardForce = 12.0f;
+	// RigidBody.Massの初期値
+	private float myMass = 1.0f;
 
 	// ２．１）で使用　左通常ターン実行の判断
 	private bool LNormalTurnSwitch = false;
@@ -50,42 +54,58 @@ public class PlayerController : MonoBehaviour {
 	// ２．２）で使用　右スライドターンpt蓄積値
 	private float RSlideTurnCount = 0;
 
+	// ３）で使用　スコア獲得点を格納
+	public float ScorePt = 0;
 
-	// ４）で使用　ゲームオーバー判定
-	public bool isEnd_DeadZone;
-	// ４）で使用　動きを減衰させる係数
-	private float coefficient = 0.95f;
+	// ４）で使用　キーアイテム取得数を格納
+	public float GetKey = 0;
 
-	// ５）で使用　プレイヤーの衝撃値
-	public float ImpactResistPt;
-	// ５）で使用　ダメージによる顔面シェイク時に表示される表情をランダム指定。ここでは０
-	public int DamageFaceChange = 0;
-	// ５）で使用　衝撃値に影響する接触時の顔面振動時間
-	public int DamagedFaceVibration = 0;
-	// ５）で使用　衝撃時に重力操作による反動増加が付与される時間
-	public float DamageRecoilTime = 0;
 
-	// ７）で使用　スーパーボタン（仮）蓄積値
+
+
+
+	// ５）で使用　スーパーボタン（仮）蓄積値
 	public float SuperButtonCharge = 0;
-	// ７）で使用　スーパーボタン（仮）秒間蓄積量
+	// ５）で使用　スーパーボタン（仮）秒間蓄積量
 	public float SuperButtonChargeGain = 0.2f;
-	// ７）で使用　スーパーボタン（仮）発動時の秒間消費量
-	public float SuperButtonChargedrain = 1.0f;
-	// ７）で使用　スーパーボタン押下の判断
+	// ５）で使用　スーパーボタン（仮）発動時の秒間消費量
+	public float SuperButtonChargedrain = 1.5f;
+	// ５）で使用　スーパーボタン押下の判断
 	private bool isSuperButtonDown = false;
-	// ７）で使用　プレイヤーの速度ベクトルを収納する
+	// ５）で使用　プレイヤーの速度ベクトルを収納する
 	public float RunSpeed = 0;
 
 
+	// ６）で使用　プレイヤーの衝撃値
+	public float ImpactResistPt;
+	// ６）で使用　ダメージによる顔面シェイク時に表示される表情をランダム指定。ここでは０
+	public int DamageFaceChange = 0;
+	// ６）で使用　衝撃値に影響する接触時の顔面振動時間
+	public int DamagedFaceVibration = 0;
+	// ６）で使用　衝撃時に重力操作による反動増加が付与される時間
+	public float DamageRecoilTime = 0;
+	// ６）で使用　衝撃耐性が一定以上で反動増加する設定をＯＮにするスイッチ
+	private bool DamageRicoilSwitch = false;
+
+	// ７）で使用　ゲームオーバー判定
+	public bool isEnd_DeadZone;
+	// ７）で使用　動きを減衰させる係数
+	private float coefficient = 0.95f;
+
+
+
+
 	void Start () {
-		// ６）Rigidbodyコンポーネントを取得
+		// Rigidbodyコンポーネントを取得
 		this.myRigidbody = this.GetComponent<Rigidbody>();
 
 		// ４）UIスクリプト「UIController_GameOver」の、publicなbool変数「GameOverSensor」を直接操作。
 		this.isEnd_DeadZone = false; //リスタート時のゲームオーバー判定除去用
 
-		// ５）プレイヤーの衝撃耐性の初期化
+		// ６）プレイヤーの衝撃耐性の初期化
 		this.ImpactResistPt = 0;
+		// ６）プレイヤーの質量を初期化
+		this.myRigidbody.mass = myMass;
 	}
 		
 
@@ -133,7 +153,7 @@ public class PlayerController : MonoBehaviour {
 		}
 
 
-		// ５）プレイヤー衝撃値の段階的時限回復量
+		// ６）プレイヤー衝撃値の段階的時限回復量
 		if (100 <= ImpactResistPt) {
 			this.ImpactResistPt -= 1.0f;
 		} else if (60 <= this.ImpactResistPt && this.ImpactResistPt < 1000) {
@@ -145,20 +165,18 @@ public class PlayerController : MonoBehaviour {
 		}
 
 	
-		// ５）衝撃耐性の蓄積によって反動が変動
-		if (0 < DamageRecoilTime) {
-			DamageRecoilTime -= 1;
-			this.myRigidbody.constraints = RigidbodyConstraints.None;
-		} else if (DamageRecoilTime <= 0) {
-			this.myRigidbody.constraints = RigidbodyConstraints.FreezeRotation;
-			this.myRigidbody.mass = 0.8f; //Playerの質量を元に戻す
-// 元の角度に戻る
+		// ６）衝撃耐性の蓄積によって反動が変動
+		if (0 < DamageRecoilTime && DamageRicoilSwitch) {
+			this.DamageRecoilTime -= 1;
+		} else if (DamageRecoilTime <= 0 && DamageRicoilSwitch) {
 			DamageRecoilTime = 0;
+			DamageRicoilSwitch = false;
+			this.myRigidbody.mass = myMass; //Playerの質量を元に戻す
 		}
 
 
 
-		// ５）DamagedFaceVibrationの数値を減少させる。０になると振動終了
+		// ６）DamagedFaceVibrationの数値を減少させる。０になると振動終了
 		if (DamagedFaceVibration > 0) {
 			DamagedFaceVibration -= 1;
 		} else {
@@ -167,10 +185,10 @@ public class PlayerController : MonoBehaviour {
 			
 
 
-		// ７）プレイヤーの速度ベクトルをコンポーネントから取得
+		// ５）プレイヤーの速度ベクトルをコンポーネントから取得
 		RunSpeed = myRigidbody.velocity.magnitude;
 
-		// ７）プレイヤーが接地中 且つ 速度が一定以上 且つ　スーパーボタン（仮）発動中でない　ならスーパーボタン（仮）蓄積量増加
+		// ５）プレイヤーが接地中 且つ 速度が一定以上 且つ　スーパーボタン（仮）発動中でない　ならスーパーボタン（仮）蓄積量増加
 		if (8 < RunSpeed && SuperButtonCharge < 100 && isSuperButtonDown == false && WalkForwardSwitch) {
 			SuperButtonCharge += SuperButtonChargeGain;
 		} else if (0 < SuperButtonCharge && isSuperButtonDown) {
@@ -179,18 +197,18 @@ public class PlayerController : MonoBehaviour {
 		}
 			
 
-		// ７）スーパーボタン発動時か否かの移動速度処理
+		// ５）スーパーボタン発動時か否かの移動速度処理
 		// １）前進スイッチ「WalkForwardSwitch」がtrue、最高速度に達していない、DamageRecoilTimeが0以下なら前進するための重力が働く
-		if (RunSpeed <= 12 && isSuperButtonDown == false && WalkForwardSwitch &&  DamageRecoilTime <= 0) {
+		if (RunSpeed <= 12 && isSuperButtonDown == false && WalkForwardSwitch && DamageRecoilTime <= 0) {
 			this.myRigidbody.AddForce (this.transform.forward * this.forwardForce);
 			//DamageRecoilTimeが0　且つ　スーパーボタンが押されていたらスーパーボタン発動
 		} else if (isSuperButtonDown && DamageRecoilTime <= 0) {
-			// ７）スーパーボタン発動時の速度
+			// ５）スーパーボタン発動時の速度
 			this.myRigidbody.AddForce (this.transform.forward * this.forwardForce * 2);
 		}
 
 
-		// ７）スーパーボタン（仮）発動し、蓄積量が０になったら通常モードに戻る
+		// ５）スーパーボタン（仮）発動し、蓄積量が０になったら通常モードに戻る
 		if (isSuperButtonDown && SuperButtonCharge <= 0) {
 			SuperButtonCharge = 0;
 			isSuperButtonDown = false;
@@ -202,8 +220,7 @@ public class PlayerController : MonoBehaviour {
 
 
 	// ２）ボタン入力によるスイッチ・スライドターンポイントの加算
-
-	//左ボタンを押した時の旋回スイッチ切り替えを行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
+	// ２）左ボタンを押した時の旋回スイッチ切り替えを行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
 	public void GetMyLeftButtonDown(){
 		this.LSlideTurnCount += this.SlideTurnTriggerPt;   // ２．２）左スライドターン蓄積値に加算
 		if (LSlideTurnCount > SlideTurnBranch) {   //２．１）通常orスライドターンの分岐
@@ -214,12 +231,12 @@ public class PlayerController : MonoBehaviour {
 	}
 
 
-	//左ボタンを放した時の処理を行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
+	// ２）左ボタンを放した時の処理を行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
 	public void GetMyLeftButtonUp(){
 		this.LNormalTurnSwitch = false; // ２．１）通常ターン実行スイッチＯＦＦ
 	}
 		
-	//右ボタンを押した時の旋回スイッチ切り替えを行い、オブジェクト「UI_RightTurnButton」に渡すための処理
+	// ２）右ボタンを押した時の旋回スイッチ切り替えを行い、オブジェクト「UI_RightTurnButton」に渡すための処理
 	public void GetMyRightButtonDown(){
 		this.RSlideTurnCount += this.SlideTurnTriggerPt;   // ２．２）左スライドターン蓄積値に加算
 		if (RSlideTurnCount > SlideTurnBranch) {   //２．１）通常orスライドターンの分岐
@@ -229,7 +246,7 @@ public class PlayerController : MonoBehaviour {
 		this.RNormalTurnSwitch = true;
 	}
 
-	//左ボタンを放した時の処理を行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
+	// ２）左ボタンを放した時の処理を行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
 	public void GetMyRightButtonUp(){
 		this.RNormalTurnSwitch = false; // ２．１）通常ターン実行スイッチＯＦＦ
 	}
@@ -237,16 +254,15 @@ public class PlayerController : MonoBehaviour {
 
 
 	void OnCollisionStay(Collision collision){
-		// ６）「GroundTag」と接触＝接地しているなら前進する
+		// １）「GroundTag」と接触＝接地しているなら前進する
 		if (collision.gameObject.tag == "GroundTag") {
 			WalkForwardSwitch = true;
-			this.GetComponent<Animator> ().SetTrigger ("walkTrigger");
 		}
 	}
 	
 
 
-	// ６）「GroundTag」と離れているなら前進・旋回するスイッチを切る
+	// １）「GroundTag」と離れているなら前進・旋回するスイッチを切る
 	void OnCollisionExit(Collision collision){
 		if (collision.gameObject.tag == "GroundTag") {
 			WalkForwardSwitch = false;
@@ -254,7 +270,7 @@ public class PlayerController : MonoBehaviour {
 	}
 		
 
-	// ７）スーパーボタン（仮）を押したときの処理
+	// ５）スーパーボタン（仮）を押したときの処理
 	public void GetMySuperButtonDown(){
 		//スーパーボタン（仮）満タンならtrue。エフェクトが出る
 		if (100 <= SuperButtonCharge) {
@@ -264,25 +280,61 @@ public class PlayerController : MonoBehaviour {
 	}
 		
 
-	// ５）衝突対象よって衝撃値の設定値を変える。ダメージでの顔振動時間の設定も入力する。
-	// 壁・柱
+
 	void OnCollisionEnter(Collision collision){
-		if (collision.gameObject.tag == "DamageTag_Obstacle") {
+
+
+		// ６）不利益のあるオブジェクトと衝突した時の設定
+		//衝突対象よって衝撃値の設定値を個別で変える。ダメージでの顔振動時間の設定も入力する。
+
+		// 柱
+		if (collision.gameObject.tag == "DamageTag_Wall") {
 			DamagedFaceVibration = 0; // ダメージ顔振動を予めリセット。
 			DamagedFaceVibration = 15; // 数値を入れて顔ダメージの振動開始
 			DamageFaceChange = Random.Range(1,4);
 			ImpactResistPt += 15;
-			if (60 <= this.ImpactResistPt) {
-				this.myRigidbody.mass = 0.4f; //物体の質量が変化
-				this.DamageRecoilTime = 30;
+			if (100 <= this.ImpactResistPt) {
+				this.DamageRicoilSwitch = true; //update()に渡すためのスイッチ
+				this.myRigidbody.mass = 0.05f; //物体の質量が変化
+				this.DamageRecoilTime = 20; //ピヨッてる時間
+			} else if (60 <= this.ImpactResistPt) {
+				this.DamageRicoilSwitch = true; //update()に渡すためのスイッチ
+				this.DamageRecoilTime = 50; //ピヨッてる時間
 			}
+		}
+		// 壁
+		if (collision.gameObject.tag == "DamageTag_Piller") {
+			DamagedFaceVibration = 0; // ダメージ顔振動を予めリセット。
+			DamagedFaceVibration = 10; // 数値を入れて顔ダメージの振動開始
+			DamageFaceChange = Random.Range(1,4);
+			ImpactResistPt += 10;
+		}
+
+
+
+	}
+
+
+
+
+	void OnTriggerEnter(Collider other){
+		// ３）利益のあるオブジェクトと衝突した時の設定
+		if (other.gameObject.tag == "GetItemTag_ScoreItem") {
+			ScorePt += 10;   // ３）スコア獲得
+			SuperButtonCharge += 5;  // ５）スーパーボタン上昇
+		}
+
+		// ４）クリアに必要なオブジェクトと衝突した時の設定
+		if (other.gameObject.tag == "GetItemTag_KeyItem") {
+			GetKey += 1;   // ３）キー獲得
 		}
 	}
 
 
-	//　４）ゲームオーバー処理
+
+	//　７）ゲームオーバー処理
 	void OnTriggerExit(Collider other){
-		//　４）死因＝デッドゾーン通過（落下）
+		//　７）死因＝デッドゾーン通過（落下）
 		if (other.gameObject.tag == "GameOverTag_DeadZone") {
 			//UIスクリプト「UIController_GameOver」の、publicなbool変数「GameOverSensor」を直接操作。
 			this.isEnd_DeadZone = true;
