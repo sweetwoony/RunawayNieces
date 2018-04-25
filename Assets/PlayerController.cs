@@ -57,11 +57,12 @@ public class PlayerController : MonoBehaviour {
 	// ３）で使用　スコア獲得点を格納
 	public float ScorePt = 0;
 
-	// ４）で使用　キーアイテム取得数を格納
-	public float GetKey = 0;
-
-
-
+	// ４）で使用　取得したキーアイテムの情報を格納
+	public bool GetKey01 = false;
+	public bool GetKey02 = false;
+	public bool GetKey03 = false;
+	public bool GetKey04 = false;
+	public bool GetKey05 = false;
 
 
 	// ５）で使用　スーパーボタン（仮）蓄積値
@@ -324,9 +325,26 @@ public class PlayerController : MonoBehaviour {
 			SuperButtonCharge += 5;  // ５）スーパーボタン上昇
 		}
 
+
 		// ４）クリアに必要なオブジェクトと衝突した時の設定
-		if (other.gameObject.tag == "GetItemTag_KeyItem") {
-			GetKey += 1;   // ３）キー獲得
+		if (other.gameObject.tag == "GetItemTag_KeyItem01") {
+			GetKey01 = true;   // ４）キー獲得
+		}
+		// ４）クリアに必要なオブジェクトと衝突した時の設定
+		if (other.gameObject.tag == "GetItemTag_KeyItem02") {
+			GetKey02 = true;   // ４）キー獲得
+		}
+		// ４）クリアに必要なオブジェクトと衝突した時の設定
+		if (other.gameObject.tag == "GetItemTag_KeyItem03") {
+			GetKey03 = true;   // ４）キー獲得
+		}
+		// ４）クリアに必要なオブジェクトと衝突した時の設定
+		if (other.gameObject.tag == "GetItemTag_KeyItem04") {
+			GetKey04 = true;   // ４）キー獲得
+		}
+		// ４）クリアに必要なオブジェクトと衝突した時の設定
+		if (other.gameObject.tag == "GetItemTag_KeyItem05") {
+			GetKey05 = true;   // ４）キー獲得
 		}
 	}
 

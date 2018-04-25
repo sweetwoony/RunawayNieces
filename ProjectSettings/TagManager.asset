@@ -13,7 +13,11 @@ TagManager:
   - DamageTag_Wall
   - DamageTag_Piller
   - GetItemTag_ScoreItem
-  - GetItemTag_KeyItem
+  - GetItemTag_KeyItem01
+  - GetItemTag_KeyItem02
+  - GetItemTag_KeyItem03
+  - GetItemTag_KeyItem04
+  - GetItemTag_KeyItem05
   layers:
   - Default
   - TransparentFX
