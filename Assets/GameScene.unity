@@ -2015,6 +2015,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ViewChangeSwitch: 0
+  MainCamera: {fileID: 548900490}
+  MoveSpeed: 0.01
 --- !u!1001 &303536683
 Prefab:
   m_ObjectHideFlags: 0
@@ -3608,7 +3610,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c188ab282d8aef4e967943399463ead, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UI_VCB: {fileID: 0}
+  UI_VCB: {fileID: 268259811}
 --- !u!1 &560582875
 GameObject:
   m_ObjectHideFlags: 0
@@ -7860,7 +7862,7 @@ ParticleSystem:
   moveWithTransform: 1
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -898628905
+  randomSeed: 767724652
   InitialModule:
     serializedVersion: 3
     enabled: 1
