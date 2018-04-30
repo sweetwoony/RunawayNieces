@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: cda79259c82d8524193ddc322b6a4163
+timeCreated: 1524314912
+licenseType: Free
+MonoImporter:
+  serializedVersion: 2
+  defaultReferences:
+  - SuperCharge01: {fileID: 21300000, guid: b5a99bc61aee4db47a2ec518a295765d, type: 3}
+  - SuperCharge02: {fileID: 21300000, guid: 24ac9cda681d4b44c82978ffb691bc57, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
