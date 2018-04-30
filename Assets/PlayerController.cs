@@ -11,28 +11,33 @@ public class PlayerController : MonoBehaviour {
 	// ３）スコア関連
 	// ４）キーアイテム関連
 	// ５）スーパーボタン（仮）の処理。蓄積条件は主に速度。
-	// ６）ゲームオーバー処理
-	// ７）壁・敵と衝突時の加算される衝撃値や反動調整
+	// ６）壁・敵と衝突時の加算される衝撃値や反動調整
+	// ７）ゲームオーバー処理
+	// ８）ビューチェンジエリアでの操作によるアングル変更
 
 
 	// プレイヤーを移動させるコンポーネントを入れる
 	private Rigidbody myRigidbody;
+	// カメラがプレイヤーを追従させるコンポーネントを入れる
+	private GameObject TrackingCamera;
 
 	// １）で使用　前進ＯＮ・ＯＦＦスイッチ
 	private bool WalkForwardSwitch = false;
 	// １）で使用　前進するための力
 	private float forwardForce = 12.0f;
+	// １）で使用　スーパーボタン使用時にかかる力
+	private float TurboForwardForce = 20.0f;
 	// RigidBody.Massの初期値
 	private float myMass = 1.0f;
 
 	// ２．１）で使用　左通常ターン実行の判断
-	private bool LNormalTurnSwitch = false;
+	public bool LNormalTurnSwitch = false;
 	// ２．１）で使用　右通常ターン実行の判断
-	private bool RNormalTurnSwitch = false;
+	public bool RNormalTurnSwitch = false;
 	// ２．１）で使用　左スライドターン実行の判断
-	private bool LSlideTurnSwitch = false;
+	public bool LSlideTurnSwitch = false;
 	// ２．１）で使用　右スライドターン実行の判断
-	private bool RSlideTurnSwitch = false;
+	public bool RSlideTurnSwitch = false;
 	// ２．１）で使用　通常ターンの旋回力
 	private float TurnForce = 60.0f;
 	// ２．１）で使用　スライドターンの旋回力
@@ -93,6 +98,8 @@ public class PlayerController : MonoBehaviour {
 	// ７）で使用　動きを減衰させる係数
 	private float coefficient = 0.95f;
 
+	// ８）で使用　ビューチェンジのスイッチ
+	public bool ViewChangeSwitch = false;
 
 
 
@@ -107,11 +114,23 @@ public class PlayerController : MonoBehaviour {
 		this.ImpactResistPt = 0;
 		// ６）プレイヤーの質量を初期化
 		this.myRigidbody.mass = myMass;
+
+		// ８）PlayerとMainCameraが親子関係になり、カメラが追従する
+		if (isEnd_DeadZone == false) {
+			TrackingCamera = GameObject.Find ("MainCamera") as GameObject;
+			TrackingCamera.transform.parent = this.transform;
+		} 
+
 	}
 		
 
 
 	void Update (){
+
+		// ８）場外ゲームオーバー時はPlayerとMainCameraの親子関係を切る
+		if (isEnd_DeadZone) {
+			TrackingCamera.transform.parent = null;
+		}
 
 		// ２．２）スライドターン蓄積値の時間減少と下限処理
 		if (this.LSlideTurnCount <= 0) {this.LSlideTurnCount = 0;} else {this.LSlideTurnCount -= 1;}   //左旋回
@@ -128,7 +147,7 @@ public class PlayerController : MonoBehaviour {
 				LSlideTurnSwitch = false;
 			} 
 		} else if (this.LNormalTurnSwitch) {
-				this.transform.Rotate (0.0f, -TurnForce * Time.deltaTime, 0.0f);　　// ２．１）通常ターン実行及び旋回力
+			this.transform.Rotate (0.0f, -TurnForce * Time.deltaTime, 0.0f);　　// ２．１）通常ターン実行及び旋回力
 		}
 
 		// ２）右側の通常ターンorスライドターン分岐スイッチOn時の処理
@@ -146,7 +165,7 @@ public class PlayerController : MonoBehaviour {
 		}
 			
 
-		//　４）DeadZoneによるゲームオーバーならプレイヤーの動きを減衰する
+		//　７）DeadZoneによるゲームオーバーならプレイヤーの動きを減衰する
 		if (this.isEnd_DeadZone) {
 			this.forwardForce *= this.coefficient;
 			this.TurnForce *= this.coefficient;
@@ -156,11 +175,11 @@ public class PlayerController : MonoBehaviour {
 
 		// ６）プレイヤー衝撃値の段階的時限回復量
 		if (100 <= ImpactResistPt) {
-			this.ImpactResistPt -= 1.0f;
+			this.ImpactResistPt -= 0.5f;
 		} else if (60 <= this.ImpactResistPt && this.ImpactResistPt < 1000) {
-			this.ImpactResistPt -= 0.08f;
+			this.ImpactResistPt -= 0.3f;
 		} else if (0 < this.ImpactResistPt) {
-			this.ImpactResistPt -= 0.07f;
+			this.ImpactResistPt -= 0.1f;
 		} else {
 			this.ImpactResistPt = 0;
 		}
@@ -205,7 +224,7 @@ public class PlayerController : MonoBehaviour {
 			//DamageRecoilTimeが0　且つ　スーパーボタンが押されていたらスーパーボタン発動
 		} else if (isSuperButtonDown && DamageRecoilTime <= 0) {
 			// ５）スーパーボタン発動時の速度
-			this.myRigidbody.AddForce (this.transform.forward * this.forwardForce * 2);
+			this.myRigidbody.AddForce (this.transform.forward * this.TurboForwardForce);
 		}
 
 
@@ -215,6 +234,7 @@ public class PlayerController : MonoBehaviour {
 			isSuperButtonDown = false;
 			GetComponent<ParticleSystem> ().Stop ();
 		}
+			
 	}
 		
 
@@ -228,9 +248,8 @@ public class PlayerController : MonoBehaviour {
 			LSlideTurnCount = 0; // ２．２）スライドターン蓄積値をリセット
 			this.LSlideTurnSwitch = true;
 		}
-			this.LNormalTurnSwitch = true;
+		this.LNormalTurnSwitch = true;
 	}
-
 
 	// ２）左ボタンを放した時の処理を行い、オブジェクト「UI_LeftTurnButton」に渡すための処理
 	public void GetMyLeftButtonUp(){
@@ -279,6 +298,18 @@ public class PlayerController : MonoBehaviour {
 			this.isSuperButtonDown = true;
 		}
 	}
+
+	// ８）アングル変更をした時の処理
+	public void GetMyViewChangeButtonClick(){
+		if (ViewChangeSwitch == false) {
+			ViewChangeSwitch = true;
+		} else if(ViewChangeSwitch == true){
+			ViewChangeSwitch = false;
+		}
+	}
+
+
+		
 		
 
 
@@ -288,12 +319,12 @@ public class PlayerController : MonoBehaviour {
 		// ６）不利益のあるオブジェクトと衝突した時の設定
 		//衝突対象よって衝撃値の設定値を個別で変える。ダメージでの顔振動時間の設定も入力する。
 
-		// 柱
+		// 壁
 		if (collision.gameObject.tag == "DamageTag_Wall") {
 			DamagedFaceVibration = 0; // ダメージ顔振動を予めリセット。
-			DamagedFaceVibration = 15; // 数値を入れて顔ダメージの振動開始
+			DamagedFaceVibration = 20; // 数値を入れて顔ダメージの振動開始
 			DamageFaceChange = Random.Range(1,4);
-			ImpactResistPt += 15;
+			ImpactResistPt += 30;
 			if (100 <= this.ImpactResistPt) {
 				this.DamageRicoilSwitch = true; //update()に渡すためのスイッチ
 				this.myRigidbody.mass = 0.05f; //物体の質量が変化
@@ -303,10 +334,10 @@ public class PlayerController : MonoBehaviour {
 				this.DamageRecoilTime = 50; //ピヨッてる時間
 			}
 		}
-		// 壁
+		// 柱
 		if (collision.gameObject.tag == "DamageTag_Piller") {
 			DamagedFaceVibration = 0; // ダメージ顔振動を予めリセット。
-			DamagedFaceVibration = 10; // 数値を入れて顔ダメージの振動開始
+			DamagedFaceVibration = 15; // 数値を入れて顔ダメージの振動開始
 			DamageFaceChange = Random.Range(1,4);
 			ImpactResistPt += 10;
 		}

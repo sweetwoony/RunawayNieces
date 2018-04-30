@@ -3,24 +3,32 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class MyCameraContller : MonoBehaviour {
-	
-	//プレイヤーのオブジェクト
+
+	//オブジェクトplayer呼び出し
 	private GameObject myPlayer;
 
 
 	void Start () {
-		//プレイヤーのオブジェクトを取得
-		this.myPlayer = GameObject.Find("Player");
+		myPlayer = GameObject.Find ("Player");
 	}
 
 
-		void Update () {
+	void Update () {
+		
+		bool VCS = myPlayer.GetComponent<PlayerController> ().ViewChangeSwitch;
+		bool E_DZ = myPlayer.GetComponent<PlayerController> ().isEnd_DeadZone;
+		Vector3 ViewtoPlayer = myPlayer.transform.position;
 
-		bool GameOverSensor = myPlayer.GetComponent<PlayerController>().isEnd_DeadZone;
-		//UIスクリプト「UIController_GameOver」のpublic static な変数「GameOverSensor」がfalseである限りカメラ追従
-		if (GameOverSensor == false) {
-			//プレイヤーの位置に合わせてカメラの位置を移動。X,Y軸はプレイヤーに追従。
-			this.transform.position = new Vector3 (myPlayer.transform.position.x, myPlayer.transform.position.y + 15, myPlayer.transform.position.z - 5);
+		if (E_DZ == false) {
+			if (VCS == false) {   // ビュー変更の角度：初期
+				this.transform.localPosition = new Vector3 (0.0f, 3.0f, -5.0f);
+				this.transform.localRotation = Quaternion.Euler (20, 0, 0);
+			} else if (VCS) {   //　ビュー変更の角度：見下ろし
+				this.transform.localPosition = new Vector3 (0.0f, 14.0f, -5.0f);
+				this.transform.localRotation = Quaternion.Euler (70, 0, 0);
+			}
+		} else if(E_DZ) {
+				this.transform.LookAt (ViewtoPlayer);
 		}
 	}
 }

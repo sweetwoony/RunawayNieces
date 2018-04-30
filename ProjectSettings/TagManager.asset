@@ -18,6 +18,7 @@ TagManager:
   - GetItemTag_KeyItem03
   - GetItemTag_KeyItem04
   - GetItemTag_KeyItem05
+  - ViewChangeButtonTag
   layers:
   - Default
   - TransparentFX
